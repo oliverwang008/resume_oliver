@@ -6,12 +6,12 @@ import { scoreJobDescription, type MatchResult } from "@/lib/match";
 const SAMPLE = `Senior Full-Stack Software Engineer — Wealth Management Platforms.
 Strong Java and Spring Boot; React or Angular, TypeScript; REST APIs and microservices;
 SQL, Oracle; Docker and Kubernetes; CI/CD; OAuth 2.0 / OpenID Connect / JWT; AWS;
-AI-assisted development (Claude Code); financial services / wealth management (Avaloq).`;
+AI-assisted development (Claude Code); financial services / wealth management.`;
 
 /**
- * Interactive JD-Match tool. Runs the same scoring algorithm as the Java
- * Spring Boot service. If NEXT_PUBLIC_API_URL is configured it POSTs to that
- * REST backend; otherwise it scores in-browser so the static site works alone.
+ * Interactive JD-Match tool. Scores JD COVERAGE: matched / (JD skills detected).
+ * Resume-only skills are shown as non-penalizing "overflow". Uses the deployed
+ * Java service when NEXT_PUBLIC_API_URL is set; otherwise scores in-browser.
  */
 export default function JdMatch() {
   const [jd, setJd] = useState("");
@@ -38,7 +38,6 @@ export default function JdMatch() {
         setSource("client");
       }
     } catch {
-      // graceful fallback to in-browser scoring
       setResult(scoreJobDescription(text));
       setSource("client");
     } finally {
@@ -52,7 +51,9 @@ export default function JdMatch() {
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">
-        Paste a job description to see how this resume&apos;s skills match it. Runs the same algorithm as the{" "}
+        Paste a job description to score how well this resume <b>covers the JD&apos;s skills</b>. Extra resume
+        skills the JD doesn&apos;t ask for are shown as <span className="text-lgt-navy dark:text-lgt-gold font-semibold">overflow</span>{" "}
+        and don&apos;t lower the score. Runs the same algorithm as the{" "}
         <span className="font-semibold text-lgt-navy dark:text-lgt-gold">Java JD-Match service</span>.
       </p>
       <textarea
@@ -70,55 +71,61 @@ export default function JdMatch() {
         >
           {loading ? "Scoring…" : "Score match"}
         </button>
-        <button
-          onClick={() => {
-            setJd(SAMPLE);
-          }}
-          className="text-sm text-lgt-navy dark:text-lgt-gold underline underline-offset-2"
-        >
+        <button onClick={() => setJd(SAMPLE)} className="text-sm text-lgt-navy dark:text-lgt-gold underline underline-offset-2">
           Use sample JD
         </button>
         {result && (
-          <span className="ml-auto text-xs text-slate-400">
-            scored {source === "api" ? "via REST API" : "in-browser"}
-          </span>
+          <span className="ml-auto text-xs text-slate-400">scored {source === "api" ? "via REST API" : "in-browser"}</span>
         )}
       </div>
 
       {result && (
-        <div className="mt-5 grid gap-4 sm:grid-cols-[auto_1fr] items-center rise">
-          <div className="flex flex-col items-center">
-            <div className={`text-4xl font-bold font-sans ${ring}`}>{result.score}%</div>
-            <div className="text-xs text-slate-500">
-              {result.matched.length}/{result.total} skills
-            </div>
-          </div>
-          <div className="space-y-2">
-            <div>
-              <div className="text-xs font-semibold text-emerald-600 mb-1">Matched</div>
-              <div className="flex flex-wrap gap-1.5">
-                {result.matched.map((s) => (
-                  <span key={s} className="rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 text-xs font-sans">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-            {result.missing.length > 0 && (
-              <div>
-                <div className="text-xs font-semibold text-slate-400 mb-1">Not detected in this JD</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {result.missing.map((s) => (
-                    <span key={s} className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 text-xs font-sans">
-                      {s}
-                    </span>
-                  ))}
+        <div className="mt-5 rise">
+          {result.jdTotal === 0 ? (
+            <p className="text-sm text-slate-500">No recognised skills detected in that job description — try one with concrete technologies.</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-[auto_1fr] items-start">
+              <div className="flex flex-col items-center sm:pr-4 sm:border-r border-slate-200 dark:border-slate-700">
+                <div className={`text-4xl font-bold font-sans ${ring}`}>{result.score}%</div>
+                <div className="text-xs text-slate-500 text-center">
+                  JD coverage
+                  <br />
+                  {result.matched.length}/{result.jdTotal} JD skills
                 </div>
               </div>
-            )}
-          </div>
+              <div className="space-y-2.5">
+                <ChipRow label="Matched — JD skills you have" tone="green" items={result.matched} />
+                <ChipRow label="Gaps — JD skills not on the resume" tone="red" items={result.gaps} />
+                <ChipRow label="Overflow — extra skills (not required by this JD)" tone="blue" items={result.overflow} />
+              </div>
+            </div>
+          )}
         </div>
       )}
+    </div>
+  );
+}
+
+function ChipRow({ label, tone, items }: { label: string; tone: "green" | "red" | "blue"; items: string[] }) {
+  if (!items || items.length === 0) return null;
+  const styles = {
+    green: "bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300",
+    red: "bg-rose-50 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300",
+    blue: "bg-lgt-mist dark:bg-slate-800 text-lgt-navy dark:text-slate-300",
+  }[tone];
+  const dot = { green: "text-emerald-600", red: "text-rose-500", blue: "text-lgt-navy dark:text-lgt-gold" }[tone];
+  return (
+    <div>
+      <div className={`text-xs font-semibold mb-1 ${dot}`}>
+        {label} <span className="text-slate-400 font-normal">({items.length})</span>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {items.map((s) => (
+          <span key={s} className={`rounded-full px-2 py-0.5 text-xs font-sans ${styles}`}>
+            {s}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

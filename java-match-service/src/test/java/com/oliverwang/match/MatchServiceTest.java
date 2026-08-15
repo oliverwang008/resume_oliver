@@ -3,6 +3,7 @@ package com.oliverwang.match;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MatchServiceTest {
@@ -10,24 +11,36 @@ class MatchServiceTest {
     private final MatchService service = new MatchService();
 
     @Test
-    void scoresStrongJdHighly() {
-        String jd = "Senior Full-Stack Engineer. Java, Spring Boot, React, Next.js, TypeScript, "
-                + "REST APIs, microservices, SQL, Oracle, Docker, AWS, OAuth 2.0, Claude Code.";
-        MatchService.MatchResult r = service.score(jd);
-        assertTrue(r.score() >= 40, "expected a decent match, got " + r.score());
-        assertTrue(r.matched().contains("Java"));
+    void coversJdSkillsAndSurfacesGaps() {
+        // JD asks for React (have) + Kubernetes (gap).
+        MatchService.MatchResult r = service.score("We need React and Kubernetes.");
+        assertEquals(2, r.jdTotal());
         assertTrue(r.matched().contains("React"));
+        assertTrue(r.gaps().contains("Kubernetes"));
+        assertEquals(50, r.score()); // 1 of 2 JD skills covered
     }
 
     @Test
-    void scoresEmptyJdAsZero() {
+    void resumeOnlySkillsAreOverflowNotPenalty() {
+        // JD only asks for React (which the resume has) -> 100%, everything else is overflow.
+        MatchService.MatchResult r = service.score("Looking for a React developer.");
+        assertEquals(100, r.score());
+        assertTrue(r.gaps().isEmpty());
+        assertFalse(r.overflow().isEmpty());
+        assertTrue(r.overflow().contains("Python")); // a resume skill the JD didn't ask for
+    }
+
+    @Test
+    void javaTokenDoesNotMatchJavaScript() {
+        MatchService.MatchResult r = service.score("Strong JavaScript required.");
+        assertTrue(r.matched().contains("JavaScript"));
+        assertFalse(r.matched().contains("Java"));
+    }
+
+    @Test
+    void emptyJdScoresZero() {
         MatchService.MatchResult r = service.score("");
         assertEquals(0, r.score());
-        assertEquals(r.total(), r.missing().size());
-    }
-
-    @Test
-    void tokenizerDropsParentheticalNotes() {
-        assertTrue(MatchService.tokensFor("AWS (Lambda, API Gateway, S3)").contains("aws"));
+        assertEquals(0, r.jdTotal());
     }
 }

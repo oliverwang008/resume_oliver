@@ -99,35 +99,35 @@ export default function Page() {
         {/* Header */}
         <header className="relative border-b-2 border-lgt-navy px-6 sm:px-10 pt-8 pb-6">
           <div className="flex items-center gap-5">
-            <span className="a-pop shrink-0" style={{ animationDelay: "0.2s" }}>
+            <span className="a-pop shrink-0" style={{ animationDelay: "0.3s" }}>
               <LgtLogo className="w-16 h-16" />
             </span>
             <div className="flex-1 text-center">
-              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.34s" }}>
+              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.5s" }}>
                 {resume.name.toUpperCase()}
               </h1>
-              <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.46s" }}>{resume.title}</p>
-              <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "0.56s" }}>
+              <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.68s" }}>{resume.title}</p>
+              <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "0.82s" }}>
                 {resume.location} &nbsp;|&nbsp; {resume.phone} &nbsp;|&nbsp; {resume.email}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "0.44s" }} />
+            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "0.62s" }} />
           </div>
           <div className="relative mt-4 h-0.5 w-full overflow-hidden">
-            <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "0.64s" }} />
+            <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "0.95s" }} />
             <div className="gold-sheen absolute inset-0" />
           </div>
         </header>
 
         <div className="px-6 sm:px-10 py-8 space-y-10">
           {/* Summary */}
-          <Section id="summary" title="Professional Summary" delay={0.72}>
+          <Section id="summary" title="Professional Summary" delay={1.05}>
             <p className="text-[15px] leading-relaxed text-justify">{resume.summary}</p>
           </Section>
 
           {/* Skills — interactive filter */}
-          <Section id="skills" title="Technical Skills" delay={0.82}>
+          <Section id="skills" title="Technical Skills" delay={1.22}>
             <div className="no-print mb-4 flex flex-wrap gap-2 font-sans text-xs">
               <button
                 onClick={() => setSkillFilter(null)}
@@ -149,7 +149,7 @@ export default function Page() {
               {resume.skills
                 .filter((g) => !skillFilter || g.label === skillFilter)
                 .map((g) => (
-                  <div key={g.label} className="rounded-lg border-l-[3px] border-lgt-navy bg-lgt-mist dark:bg-slate-800/60 p-3">
+                  <div key={g.label} className="lift rounded-lg border-l-[3px] border-lgt-navy bg-lgt-mist dark:bg-slate-800/60 p-3">
                     <div className="font-head font-bold text-lgt-navy dark:text-lgt-gold text-sm mb-1.5">{g.label}</div>
                     <div className="flex flex-wrap gap-1.5">
                       {g.items.map((s) => (
@@ -164,12 +164,12 @@ export default function Page() {
           </Section>
 
           {/* Experience — expandable */}
-          <Section id="experience" title="Professional Experience" delay={0.92}>
+          <Section id="experience" title="Professional Experience" delay={1.39}>
             <div className="space-y-3">
               {resume.experience.map((role, i) => {
                 const open = openRole === i;
                 return (
-                  <div key={i} className="rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div key={i} className="lift rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                     <button
                       onClick={() => setOpenRole(open ? null : i)}
                       className="w-full flex items-baseline justify-between gap-3 px-4 py-3 text-left hover:bg-lgt-mist dark:hover:bg-slate-800/60"
@@ -218,12 +218,12 @@ export default function Page() {
           </Section>
 
           {/* JD Match tool */}
-          <Section id="match" title="Interactive: JD Match" delay={1.02}>
+          <Section id="match" title="Interactive: JD Match" delay={1.56}>
             <JdMatch />
           </Section>
 
           {/* Education */}
-          <Section id="education" title="Education & Certifications" delay={1.12}>
+          <Section id="education" title="Education & Certifications" delay={1.73}>
             <div className="space-y-2 text-[14px]">
               {resume.education.map((e) => (
                 <p key={e.degree}>
