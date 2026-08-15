@@ -34,17 +34,31 @@ export default function Page() {
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => e.isIntersecting && setActive(e.target.id));
-      },
-      { rootMargin: "-45% 0px -50% 0px" }
-    );
-    NAV.forEach((n) => {
-      const el = document.getElementById(n.id);
-      if (el) obs.observe(el);
-    });
-    return () => obs.disconnect();
+    const ids = NAV.map((n) => n.id);
+    const LINE = 110; // px from top: a section is "active" once its top passes this line
+    const onScroll = () => {
+      const doc = document.documentElement;
+      // At the very bottom, the last (short) section can't reach the line — force it active.
+      if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) {
+        setActive(ids[ids.length - 1]);
+        return;
+      }
+      // Otherwise: the last section whose top has scrolled above the line. Defaults to the
+      // first section at the top of the page.
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= LINE) current = id;
+      }
+      setActive(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   return (
@@ -58,6 +72,7 @@ export default function Page() {
               <a
                 key={n.id}
                 href={`#${n.id}`}
+                onClick={() => setActive(n.id)}
                 className={`whitespace-nowrap rounded-md px-3 py-1.5 font-sans transition-colors ${
                   active === n.id
                     ? "bg-lgt-navy text-white"
