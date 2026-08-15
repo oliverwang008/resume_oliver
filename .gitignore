@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+api-server/node_modules/
+.pnp
+.pnp.js
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# production / build
+build/
+dist/
+java-match-service/target/
+
+# misc
+.DS_Store
+*.pem
+.vscode/
+.idea/
+
+# env
+.env
+.env*.local
+
+# aws / deploy artifacts
+infra/.deploy-state

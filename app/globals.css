@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lgt-navy: #283c83;
+  --lgt-gold: #ffc800;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Print: hide chrome, show the resume cleanly */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-full {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}
+
+/* Subtle entrance animation for sections */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise {
+  animation: rise 0.5s ease both;
+}
+
+/* Gold underline accent used on section headers */
+.accent-rule::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 3px;
+  background: var(--lgt-gold);
+  margin-top: 6px;
+  border-radius: 2px;
+}
