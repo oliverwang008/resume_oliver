@@ -64,7 +64,7 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6">
       {/* Sticky nav */}
-      <nav className="no-print sticky top-0 z-20 -mx-4 sm:-mx-6 mb-6 border-b border-slate-200 dark:border-slate-800 bg-slate-100/85 dark:bg-slate-950/85 backdrop-blur px-4 sm:px-6 py-2">
+      <nav className="a-slide-down no-print sticky top-0 z-20 -mx-4 sm:-mx-6 mb-6 border-b border-slate-200 dark:border-slate-800 bg-slate-100/85 dark:bg-slate-950/85 backdrop-blur px-4 sm:px-6 py-2">
         <div className="flex items-center gap-4 text-sm">
           <LgtLogo className="w-7 h-7" />
           <div className="flex gap-1 overflow-x-auto">
@@ -95,34 +95,39 @@ export default function Page() {
       </nav>
 
       {/* Card */}
-      <div className="print-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
+      <div className="a-card print-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
         {/* Header */}
         <header className="relative border-b-2 border-lgt-navy px-6 sm:px-10 pt-8 pb-6">
           <div className="flex items-center gap-5">
-            <LgtLogo className="w-16 h-16 shrink-0" />
+            <span className="a-pop shrink-0" style={{ animationDelay: "0.2s" }}>
+              <LgtLogo className="w-16 h-16" />
+            </span>
             <div className="flex-1 text-center">
-              <h1 className="font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white">
+              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.34s" }}>
                 {resume.name.toUpperCase()}
               </h1>
-              <p className="font-head italic font-bold text-sm sm:text-base mt-1">{resume.title}</p>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans">
+              <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.46s" }}>{resume.title}</p>
+              <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "0.56s" }}>
                 {resume.location} &nbsp;|&nbsp; {resume.phone} &nbsp;|&nbsp; {resume.email}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="profile_pic.jpeg" alt="Oliver Wang" className="w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" />
+            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "0.44s" }} />
           </div>
-          <div className="mt-4 h-0.5 w-full bg-lgt-gold" />
+          <div className="relative mt-4 h-0.5 w-full overflow-hidden">
+            <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "0.64s" }} />
+            <div className="gold-sheen absolute inset-0" />
+          </div>
         </header>
 
         <div className="px-6 sm:px-10 py-8 space-y-10">
           {/* Summary */}
-          <Section id="summary" title="Professional Summary">
+          <Section id="summary" title="Professional Summary" delay={0.72}>
             <p className="text-[15px] leading-relaxed text-justify">{resume.summary}</p>
           </Section>
 
           {/* Skills — interactive filter */}
-          <Section id="skills" title="Technical Skills">
+          <Section id="skills" title="Technical Skills" delay={0.82}>
             <div className="no-print mb-4 flex flex-wrap gap-2 font-sans text-xs">
               <button
                 onClick={() => setSkillFilter(null)}
@@ -159,7 +164,7 @@ export default function Page() {
           </Section>
 
           {/* Experience — expandable */}
-          <Section id="experience" title="Professional Experience">
+          <Section id="experience" title="Professional Experience" delay={0.92}>
             <div className="space-y-3">
               {resume.experience.map((role, i) => {
                 const open = openRole === i;
@@ -213,12 +218,12 @@ export default function Page() {
           </Section>
 
           {/* JD Match tool */}
-          <Section id="match" title="Interactive: JD Match">
+          <Section id="match" title="Interactive: JD Match" delay={1.02}>
             <JdMatch />
           </Section>
 
           {/* Education */}
-          <Section id="education" title="Education & Certifications">
+          <Section id="education" title="Education & Certifications" delay={1.12}>
             <div className="space-y-2 text-[14px]">
               {resume.education.map((e) => (
                 <p key={e.degree}>
@@ -240,9 +245,19 @@ export default function Page() {
   );
 }
 
-function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+function Section({
+  id,
+  title,
+  delay = 0,
+  children,
+}: {
+  id: string;
+  title: string;
+  delay?: number;
+  children: React.ReactNode;
+}) {
   return (
-    <section id={id} className="scroll-mt-20 rise">
+    <section id={id} className="scroll-mt-20 a-rise" style={{ animationDelay: `${delay}s` }}>
       <h2 className="accent-rule font-head uppercase tracking-wide text-lgt-navy dark:text-lgt-gold text-lg font-bold mb-4">
         {title}
       </h2>
