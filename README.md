@@ -2,7 +2,10 @@
 
 An interactive, LGT-themed resume web app for **Oliver Wang**, built with **Next.js + React**, a **REST API**, and a **Java (Spring Boot)** JD-match microservice, deployed to **AWS S3**.
 
-🔗 **Live:** http://oliver-wang-resume-f9b9ac.s3-website-ap-southeast-2.amazonaws.com/
+🔗 **Live web app:** http://oliver-wang-resume-f9b9ac.s3-website-ap-southeast-2.amazonaws.com/
+🔗 **Live Java REST API:** https://y41jb3m0qd.execute-api.ap-southeast-2.amazonaws.com/api/health
+
+The JD-Match tool on the live site calls the deployed **Java Spring Boot service** (API Gateway → Lambda) and falls back to in-browser scoring if the API is unreachable.
 
 ---
 
@@ -91,8 +94,30 @@ tests in `MatchServiceTest`. Build and run:
 
 ```bash
 cd java-match-service
-./mvnw test
-./mvnw spring-boot:run
+mvn test
+mvn spring-boot:run
+```
+
+### Deploy the Java service to AWS Lambda
+
+The service is deployed as a **container image on AWS Lambda** (multi-stage Docker build
+compiles the JAR — no local JDK needed), fronted by **API Gateway** and run behind the
+**AWS Lambda Web Adapter** (a normal Spring Boot server, no code changes, scales to zero).
+
+```bash
+REGION=ap-southeast-2 bash infra/deploy-lambda.sh
+```
+
+> Note: public **Lambda Function URLs are blocked by an account guardrail** on the target
+> AWS account, so the public entry point is an **API Gateway HTTP API** in front of the
+> Lambda rather than a Function URL.
+
+**Teardown:**
+
+```bash
+aws lambda delete-function --function-name jd-match-service --region ap-southeast-2
+aws ecr delete-repository --repository-name jd-match-service --force --region ap-southeast-2
+# plus the apigatewayv2 API (jd-match-api) and the jd-match-lambda-role IAM role
 ```
 
 ---
