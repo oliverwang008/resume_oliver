@@ -126,7 +126,11 @@ export const resume: Resume = {
       detail: "Second major: Advanced Business Technology. GPA 3.45/4.0; Tanoto Foundation Scholarship.",
     },
   ],
-  certifications: ["Avaloq Certified Professional (2014)", "Agile Scrum Master (2020)"],
+  certifications: [
+    "Claude Certified Architect (2026)",
+    "Avaloq Certified Professional (2014)",
+    "Agile Scrum Master (2020)",
+  ],
 };
 
 /** Flat, de-duplicated list of every skill keyword — used by the JD-match scorer. */
