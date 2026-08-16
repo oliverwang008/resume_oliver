@@ -33,6 +33,16 @@ export default function Page() {
   const [openRole, setOpenRole] = useState<number | null>(0);
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
 
+  // First-load-only sequential entrance: after the intro plays, elements render
+  // without the animation so interactions (e.g. filtering) stay instant.
+  const [revealed, setRevealed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setRevealed(true), 6500);
+    return () => clearTimeout(t);
+  }, []);
+  const enter = (delay: number): { className: string; style?: React.CSSProperties } =>
+    revealed ? { className: "" } : { className: "a-rise", style: { animationDelay: `${delay}s` } };
+
   useEffect(() => {
     const ids = NAV.map((n) => n.id);
     const LINE = 110; // px from top: a section is "active" once its top passes this line
@@ -103,32 +113,32 @@ export default function Page() {
               <LgtLogo className="w-16 h-16" />
             </span>
             <div className="flex-1 text-center">
-              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.5s" }}>
+              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.6s" }}>
                 {resume.name.toUpperCase()}
               </h1>
-              <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.68s" }}>{resume.title}</p>
-              <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "0.82s" }}>
+              <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.85s" }}>{resume.title}</p>
+              <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "1.05s" }}>
                 {resume.location} &nbsp;|&nbsp; {resume.phone} &nbsp;|&nbsp; {resume.email}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "0.62s" }} />
+            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "1.25s" }} />
           </div>
           <div className="relative mt-4 h-0.5 w-full overflow-hidden">
-            <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "0.95s" }} />
+            <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "1.5s" }} />
             <div className="gold-sheen absolute inset-0" />
           </div>
         </header>
 
         <div className="px-6 sm:px-10 py-8 space-y-10">
           {/* Summary */}
-          <Section id="summary" title="Professional Summary" delay={1.05}>
+          <Section id="summary" title="Professional Summary" delay={1.8}>
             <p className="text-[15px] leading-relaxed text-justify">{resume.summary}</p>
           </Section>
 
           {/* Skills — interactive filter */}
-          <Section id="skills" title="Technical Skills" delay={1.22}>
-            <div className="no-print mb-4 flex flex-wrap gap-2 font-sans text-xs">
+          <Section id="skills" title="Technical Skills" delay={2.1} animate={false}>
+            <div className={`no-print mb-4 flex flex-wrap gap-2 font-sans text-xs ${enter(2.2).className}`} style={enter(2.2).style}>
               <button
                 onClick={() => setSkillFilter(null)}
                 className={`rounded-full px-3 py-1 ${skillFilter === null ? "bg-lgt-navy text-white" : "bg-lgt-mist dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`}
@@ -148,8 +158,10 @@ export default function Page() {
             <div className="grid gap-3 sm:grid-cols-2">
               {resume.skills
                 .filter((g) => !skillFilter || g.label === skillFilter)
-                .map((g) => (
-                  <div key={g.label} className="lift rounded-lg border-l-[3px] border-lgt-navy bg-lgt-mist dark:bg-slate-800/60 p-3">
+                .map((g, ci) => {
+                  const e = enter(2.35 + ci * 0.14);
+                  return (
+                  <div key={g.label} className={`lift rounded-lg border-l-[3px] border-lgt-navy bg-lgt-mist dark:bg-slate-800/60 p-3 ${e.className}`} style={e.style}>
                     <div className="font-head font-bold text-lgt-navy dark:text-lgt-gold text-sm mb-1.5">{g.label}</div>
                     <div className="flex flex-wrap gap-1.5">
                       {g.items.map((s) => (
@@ -159,17 +171,19 @@ export default function Page() {
                       ))}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
             </div>
           </Section>
 
           {/* Experience — expandable */}
-          <Section id="experience" title="Professional Experience" delay={1.39}>
+          <Section id="experience" title="Professional Experience" delay={3.2} animate={false}>
             <div className="space-y-3">
               {resume.experience.map((role, i) => {
                 const open = openRole === i;
+                const e = enter(3.4 + i * 0.14);
                 return (
-                  <div key={i} className="lift rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div key={i} className={`lift rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden ${e.className}`} style={e.style}>
                     <button
                       onClick={() => setOpenRole(open ? null : i)}
                       className="w-full flex items-baseline justify-between gap-3 px-4 py-3 text-left hover:bg-lgt-mist dark:hover:bg-slate-800/60"
@@ -218,12 +232,12 @@ export default function Page() {
           </Section>
 
           {/* JD Match tool */}
-          <Section id="match" title="Interactive: JD Match" delay={1.56}>
+          <Section id="match" title="Interactive: JD Match" delay={4.0}>
             <JdMatch />
           </Section>
 
           {/* Education */}
-          <Section id="education" title="Education & Certifications" delay={1.73}>
+          <Section id="education" title="Education & Certifications" delay={4.25}>
             <div className="space-y-2 text-[14px]">
               {resume.education.map((e) => (
                 <p key={e.degree}>
@@ -249,16 +263,23 @@ function Section({
   id,
   title,
   delay = 0,
+  animate = true,
   children,
 }: {
   id: string;
   title: string;
   delay?: number;
+  animate?: boolean; // true: animate the whole block; false: animate only the heading (children cascade themselves)
   children: React.ReactNode;
 }) {
+  const h2Base = "accent-rule font-head uppercase tracking-wide text-lgt-navy dark:text-lgt-gold text-lg font-bold mb-4";
   return (
-    <section id={id} className="scroll-mt-20 a-rise" style={{ animationDelay: `${delay}s` }}>
-      <h2 className="accent-rule font-head uppercase tracking-wide text-lgt-navy dark:text-lgt-gold text-lg font-bold mb-4">
+    <section
+      id={id}
+      className={`scroll-mt-20 ${animate ? "a-rise" : ""}`}
+      style={animate ? { animationDelay: `${delay}s` } : undefined}
+    >
+      <h2 className={`${h2Base} ${animate ? "" : "a-rise"}`} style={animate ? undefined : { animationDelay: `${delay}s` }}>
         {title}
       </h2>
       {children}
