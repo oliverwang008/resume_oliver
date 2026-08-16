@@ -81,9 +81,9 @@ export default function Page() {
     <main className="mx-auto max-w-4xl px-4 sm:px-6 py-6">
       {/* Sticky nav */}
       <nav className="a-slide-down no-print sticky top-0 z-20 -mx-4 sm:-mx-6 mb-6 border-b border-slate-200 dark:border-slate-800 bg-slate-100/85 dark:bg-slate-950/85 backdrop-blur px-4 sm:px-6 py-2">
-        <div className="flex items-center gap-4 text-sm">
-          <LgtLogo className="w-7 h-7" />
-          <div className="flex gap-1 overflow-x-auto">
+        <div className="flex items-center gap-2 sm:gap-4 text-sm">
+          <LgtLogo className="w-7 h-7 hidden sm:block shrink-0" />
+          <div className="flex-1 min-w-0 flex gap-1 overflow-x-auto">
             {NAV.map((n) => (
               <a
                 key={n.id}
@@ -99,7 +99,7 @@ export default function Page() {
               </a>
             ))}
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2 shrink-0">
             <button onClick={toggle} aria-label="Toggle theme" className="rounded-md border border-slate-300 dark:border-slate-600 px-2.5 py-1.5 text-xs font-sans hover:bg-lgt-mist dark:hover:bg-slate-800">
               {dark ? "☀︎ Light" : "☾ Dark"}
             </button>
@@ -113,22 +113,22 @@ export default function Page() {
       {/* Card */}
       <div className="a-card print-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
         {/* Header */}
-        <header className="relative border-b-2 border-lgt-navy px-6 sm:px-10 pt-8 pb-6">
-          <div className="flex items-center gap-5">
+        <header className="relative border-b-2 border-lgt-navy px-4 sm:px-10 pt-6 sm:pt-8 pb-6">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
             <span className="a-pop shrink-0" style={{ animationDelay: "0.3s" }}>
-              <LgtLogo className="w-16 h-16" />
+              <LgtLogo className="w-12 h-12 sm:w-16 sm:h-16" />
             </span>
-            <div className="flex-1 text-center">
-              <h1 className="a-rise font-head text-3xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.6s" }}>
+            <div className="flex-1 min-w-0 text-center">
+              <h1 className="a-rise font-head text-2xl sm:text-4xl font-bold tracking-wide text-lgt-navy dark:text-white" style={{ animationDelay: "0.6s" }}>
                 {resume.name.toUpperCase()}
               </h1>
               <p className="a-rise font-head italic font-bold text-sm sm:text-base mt-1" style={{ animationDelay: "0.85s" }}>{resume.title}</p>
               <p className="a-rise text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-sans" style={{ animationDelay: "1.05s" }}>
-                {resume.location} &nbsp;|&nbsp; {resume.phone} &nbsp;|&nbsp; {resume.email}
+                {resume.location} <span className="text-slate-300 dark:text-slate-600">|</span> {resume.phone} <span className="text-slate-300 dark:text-slate-600">|</span> {resume.email}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-20 h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "1.25s" }} />
+            <img src="profile_pic.jpeg" alt="Oliver Wang" className="a-zoom w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-lgt-navy shrink-0" style={{ animationDelay: "1.25s" }} />
           </div>
           <div className="relative mt-4 h-0.5 w-full overflow-hidden">
             <div className="a-grow h-full w-full bg-lgt-gold" style={{ animationDelay: "1.5s" }} />
@@ -136,7 +136,7 @@ export default function Page() {
           </div>
         </header>
 
-        <div className="px-6 sm:px-10 py-8 space-y-10">
+        <div className="px-4 sm:px-10 py-6 sm:py-8 space-y-8 sm:space-y-10">
           {/* Summary */}
           <Section id="summary" title="Professional Summary" delay={1.8}>
             <p className="text-[15px] leading-relaxed text-justify">{resume.summary}</p>
@@ -194,7 +194,7 @@ export default function Page() {
                       onClick={() => setOpenRole(open ? null : i)}
                       className="w-full flex items-baseline justify-between gap-3 px-4 py-3 text-left hover:bg-lgt-mist dark:hover:bg-slate-800/60"
                     >
-                      <span>
+                      <span className="min-w-0">
                         <span className="font-bold">{role.title}</span>{" "}
                         <span className="italic text-slate-600 dark:text-slate-300">
                           | {role.org}
