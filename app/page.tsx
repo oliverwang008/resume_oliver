@@ -43,6 +43,12 @@ export default function Page() {
   const enter = (delay: number): { className: string; style?: React.CSSProperties } =>
     revealed ? { className: "" } : { className: "a-rise", style: { animationDelay: `${delay}s` } };
 
+  // Always start at the top on (re)load (the pre-paint script strips the hash;
+  // this is a belt-and-suspenders reset after mount).
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const ids = NAV.map((n) => n.id);
     const LINE = 110; // px from top: a section is "active" once its top passes this line
