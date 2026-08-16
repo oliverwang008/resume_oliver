@@ -43,4 +43,24 @@ class MatchServiceTest {
         assertEquals(0, r.score());
         assertEquals(0, r.jdTotal());
     }
+
+    @Test
+    void orRequirementCountsAsOneCoveredWhenEitherIsHeld() {
+        // "React or Angular": resume has React -> one covered requirement, no gap.
+        MatchService.MatchResult r = service.score("Front-end with React or Angular.");
+        assertEquals(1, r.jdTotal());
+        assertEquals(100, r.score());
+        assertTrue(r.matched().contains("React"));
+        assertTrue(r.gaps().isEmpty());
+    }
+
+    @Test
+    void orRequirementIsOneGapWhenNeitherIsHeld() {
+        // "Kubernetes or OpenShift": resume has neither -> a single gap, not two.
+        MatchService.MatchResult r = service.score("Container orchestration with Kubernetes or OpenShift.");
+        assertEquals(1, r.jdTotal());
+        assertEquals(0, r.score());
+        assertEquals(1, r.gaps().size());
+        assertEquals("Kubernetes / OpenShift", r.gaps().get(0));
+    }
 }

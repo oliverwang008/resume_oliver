@@ -115,10 +115,10 @@ export const SKILL_DICT: Record<string, string[]> = {
   Confluence: ["confluence"],
 };
 
-/** Word-boundary token match, so "java" doesn't match "javascript", etc. */
-function hasToken(text: string, token: string): boolean {
+/** Word-boundary token regex, so "java" doesn't match "javascript", etc. */
+function tokenRegex(token: string): RegExp {
   const esc = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`(^|[^a-z0-9+#.])${esc}([^a-z0-9+#]|$)`, "i").test(text);
+  return new RegExp(`(^|[^a-z0-9+#.])(${esc})([^a-z0-9+#]|$)`, "i");
 }
 
 /** Canonical skills present in a block of text. */
@@ -126,7 +126,7 @@ function skillsIn(text: string): Set<string> {
   const lc = text.toLowerCase();
   const found = new Set<string>();
   for (const [name, tokens] of Object.entries(SKILL_DICT)) {
-    if (tokens.some((t) => hasToken(lc, t))) found.add(name);
+    if (tokens.some((t) => tokenRegex(t).test(lc))) found.add(name);
   }
   return found;
 }
@@ -137,20 +137,88 @@ export function resumeSkillSet(): Set<string> {
   return skillsIn(text);
 }
 
+/** Each canonical skill present in the JD, with the position of its first mention. */
+function orderedSkillHits(jd: string): { name: string; start: number; end: number }[] {
+  const lc = jd.toLowerCase();
+  const hits: { name: string; start: number; end: number }[] = [];
+  for (const [name, tokens] of Object.entries(SKILL_DICT)) {
+    let best = -1;
+    let bestEnd = -1;
+    for (const t of tokens) {
+      const m = tokenRegex(t).exec(lc);
+      if (m) {
+        const start = m.index + m[1].length;
+        if (best === -1 || start < best) {
+          best = start;
+          bestEnd = start + m[2].length;
+        }
+      }
+    }
+    if (best !== -1) hits.push({ name, start: best, end: bestEnd });
+  }
+  return hits.sort((a, b) => a.start - b.start);
+}
+
+/** Classify the text between two adjacent skill mentions. */
+function connector(gap: string): "or" | "comma" | "other" {
+  const core = gap.replace(/^[,\s]+/, "").replace(/[,\s]+$/, "");
+  if (core === "or" || core === "/") return "or";
+  if (core === "") return "comma";
+  return "other";
+}
+
+/**
+ * Group the JD's skills into requirements. Skills joined by "or" / "/" (an
+ * alternation, e.g. "React or Angular", "A, B or C") collapse into ONE
+ * requirement; comma- or otherwise-separated skills stay individual.
+ */
+function requirementsFromJd(jd: string): string[][] {
+  const hits = orderedSkillHits(jd);
+  const items = hits.map((h, i) => ({
+    name: h.name,
+    conn: i < hits.length - 1 ? connector(jd.substring(h.end, hits[i + 1].start)) : "other",
+  }));
+
+  // Split into segments at "other" boundaries; within a segment that contains
+  // any "or", the whole segment is one alternation group.
+  const groups: string[][] = [];
+  let seg: typeof items = [];
+  for (const it of items) {
+    seg.push(it);
+    if (it.conn === "other") {
+      flush(seg, groups);
+      seg = [];
+    }
+  }
+  flush(seg, groups);
+  return groups;
+}
+
+function flush(seg: { name: string; conn: string }[], groups: string[][]) {
+  if (seg.length === 0) return;
+  if (seg.some((x) => x.conn === "or")) groups.push(seg.map((x) => x.name));
+  else seg.forEach((x) => groups.push([x.name]));
+}
+
 export function scoreJobDescription(jd: string): MatchResult {
-  const jdSkills = skillsIn(jd);
   const have = resumeSkillSet();
+  const groups = requirementsFromJd(jd);
+  const jdSkills = new Set<string>(groups.flat());
 
   const matched: string[] = [];
   const gaps: string[] = [];
-  jdSkills.forEach((s) => (have.has(s) ? matched : gaps).push(s));
+  for (const group of groups) {
+    const covered = group.filter((s) => have.has(s));
+    if (covered.length > 0) matched.push(covered.join(" / "));
+    else gaps.push(group.join(" / "));
+  }
 
   const overflow: string[] = [];
   have.forEach((s) => {
     if (!jdSkills.has(s)) overflow.push(s);
   });
 
-  const jdTotal = jdSkills.size;
+  const jdTotal = groups.length;
   const score = jdTotal === 0 ? 0 : Math.round((matched.length / jdTotal) * 100);
   return { score, matched, gaps, overflow, jdTotal };
 }

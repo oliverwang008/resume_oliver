@@ -51,9 +51,11 @@ export default function JdMatch() {
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 shadow-sm">
       <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">
-        Paste a job description to score how well this resume <b>covers the JD&apos;s skills</b>. Extra resume
-        skills the JD doesn&apos;t ask for are shown as <span className="text-lgt-navy dark:text-lgt-gold font-semibold">overflow</span>{" "}
-        and don&apos;t lower the score. Runs the same algorithm as the{" "}
+        Paste a job description to score how well this resume <b>covers the JD&apos;s requirements</b>. An
+        &ldquo;A or B&rdquo; requirement counts as covered if you have either. Extra resume skills the JD
+        doesn&apos;t ask for are shown as{" "}
+        <span className="text-lgt-navy dark:text-lgt-gold font-semibold">overflow</span> and don&apos;t lower
+        the score. Runs the same algorithm as the{" "}
         <span className="font-semibold text-lgt-navy dark:text-lgt-gold">Java JD-Match service</span>.
       </p>
       <textarea
@@ -90,12 +92,12 @@ export default function JdMatch() {
                 <div className="text-xs text-slate-500 text-center">
                   JD coverage
                   <br />
-                  {result.matched.length}/{result.jdTotal} JD skills
+                  {result.matched.length}/{result.jdTotal} requirements
                 </div>
               </div>
               <div className="space-y-2.5">
-                <ChipRow label="Matched — JD skills you have" tone="green" items={result.matched} />
-                <ChipRow label="Gaps — JD skills not on the resume" tone="red" items={result.gaps} />
+                <ChipRow label="Matched — requirements you cover" tone="green" items={result.matched} />
+                <ChipRow label="Gaps — requirements not on the resume" tone="red" items={result.gaps} />
                 <ChipRow label="Overflow — extra skills (not required by this JD)" tone="blue" items={result.overflow} />
               </div>
             </div>
