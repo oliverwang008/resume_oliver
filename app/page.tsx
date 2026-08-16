@@ -223,7 +223,19 @@ export default function Page() {
                             <ul className="space-y-1.5 text-[14px]">
                               {role.projects.map((p) => (
                                 <li key={p.name}>
-                                  <span className="font-bold">{p.name}</span> — {p.blurb}
+                                  {p.url ? (
+                                    <a
+                                      href={p.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="font-bold text-lgt-navy dark:text-lgt-gold underline underline-offset-2 decoration-lgt-gold/60 hover:decoration-lgt-navy dark:hover:decoration-lgt-gold"
+                                    >
+                                      {p.name} ↗
+                                    </a>
+                                  ) : (
+                                    <span className="font-bold">{p.name}</span>
+                                  )}{" "}
+                                  — {p.blurb}
                                 </li>
                               ))}
                             </ul>

@@ -12,6 +12,7 @@ export interface SkillGroup {
 export interface Project {
   name: string;
   blurb: string;
+  url?: string;
 }
 
 export interface Role {
@@ -84,10 +85,10 @@ export const resume: Resume = {
         "Deployed across AWS (Lambda, API Gateway, S3, CloudFront, Bedrock) and Google Cloud (Cloud Run, Functions) with Docker and Terraform (IaC); built LLM features on OpenAI and Anthropic Claude — including a serverless RAG engine (vector search, Titan embeddings, grounded citations), an MCP server and evaluation harnesses — with Firebase Auth (OAuth/JWT) and subscription billing.",
       ],
       projects: [
-        { name: "AInvestor", blurb: "AI investment-recommendation & portfolio-research platform: FastAPI REST microservice with external market-data integrations and LLM-ranked picks, over a SQLAlchemy portfolio database and React/Next.js UI." },
-        { name: "AIOffer.me", blurb: "AI interview & resume platform: Next.js app with Firebase Auth, REST API routes and Dockerised PDF/DOCX microservices on Google Cloud Run, and text-to-speech via Google Cloud." },
-        { name: "BiteWise", blurb: "Cross-platform AI nutrition app (Flutter), published to the App Store with a working Android build, consuming a Dockerised FastAPI REST backend on Cloud Run with AI meal analysis and subscriptions." },
-        { name: "IMMI-Web", blurb: "AI immigration-guidance platform with a serverless document-RAG engine on AWS (Terraform, API Gateway REST API, Lambda, S3 vector store, Bedrock/Titan, Anthropic Claude) plus an MCP server." },
+        { name: "AInvestor", url: "http://ainvestor-web-7b61b8.s3-website-ap-southeast-2.amazonaws.com/", blurb: "AI investment-recommendation & portfolio-research platform: FastAPI REST microservice with external market-data integrations and LLM-ranked picks, over a SQLAlchemy portfolio database and React/Next.js UI." },
+        { name: "AIOffer.me", url: "https://aioffer.me/", blurb: "AI interview & resume platform: Next.js app with Firebase Auth, REST API routes and Dockerised PDF/DOCX microservices on Google Cloud Run, and text-to-speech via Google Cloud." },
+        { name: "BiteWise", url: "https://apps.apple.com/au/app/calorie-tracker-bitewise/id6760708018", blurb: "Cross-platform AI nutrition app (Flutter), published to the App Store with a working Android build, consuming a Dockerised FastAPI REST backend on Cloud Run with AI meal analysis and subscriptions." },
+        { name: "IMMI-Web", url: "https://auvtracker.web.app/", blurb: "AI immigration-guidance platform with a serverless document-RAG engine on AWS (Terraform, API Gateway REST API, Lambda, S3 vector store, Bedrock/Titan, Anthropic Claude) plus an MCP server." },
       ],
     },
     {
